@@ -1,0 +1,32 @@
+
+version: '3.8'
+
+networks:
+  net-bestock:
+    driver: bridge
+
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    container_name: keycloak
+    command: start-dev
+    environment:
+      KEYCLOAK_ADMIN: BESTOCK
+      KEYCLOAK_ADMIN_PASSWORD: 15@Bestock
+    ports:
+      - "8080:8080"
+    networks:
+      - net-bestock
+
+  bestock:
+    build: .
+    container_name: bestockanyway
+    ports:
+      - "8000:8000"
+    environment:
+      - KEYCLOAK_URL=http://keycloak:8080
+      - REALM_NAME=myrealm
+    depends_on:
+      - keycloak
+    networks:
+      - net-bestock
